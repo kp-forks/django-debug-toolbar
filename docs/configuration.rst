@@ -72,6 +72,8 @@ Toolbar options
   The toolbar searches for this string in the HTML and inserts itself just
   before.
 
+.. _IS_RUNNING_TESTS:
+
 * ``IS_RUNNING_TESTS``
 
   Default: ``"test" in sys.argv``
@@ -187,6 +189,14 @@ Toolbar options
   This controls whether the toolbar should update to the latest AJAX
   request when it occurs. This is especially useful when using htmx
   boosting or similar JavaScript techniques.
+
+.. _DEFAULT_THEME:
+
+* ``DEFAULT_THEME``
+
+  Default: ``"auto"``
+
+  This controls which theme will use the toolbar by default.
 
 Panel options
 ~~~~~~~~~~~~~
@@ -366,10 +376,10 @@ Here's what a slightly customized toolbar configuration might look like::
 
 Theming support
 ---------------
-The debug toolbar uses CSS variables to define fonts. This allows changing
-fonts without having to override many individual CSS rules. For example, if
-you preferred Roboto instead of the default list of fonts you could add a
-**debug_toolbar/base.html** template override to your project:
+The debug toolbar uses CSS variables to define fonts and colors. This allows
+changing fonts and colors without having to override many individual CSS rules.
+For example, if you preferred Roboto instead of the default list of fonts you
+could add a **debug_toolbar/base.html** template override to your project:
 
 .. code-block:: django
 

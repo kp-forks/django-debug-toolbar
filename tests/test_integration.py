@@ -75,6 +75,28 @@ class DebugToolbarTestCase(BaseTestCase):
             self.assertTrue(show_toolbar(self.request))
         mocked_gethostbyname.assert_called_once_with("host.docker.internal")
 
+    def test_not_iterating_over_INTERNAL_IPS(self):
+        """Verify that the middleware does not iterate over INTERNAL_IPS in some way.
+
+        Some people use iptools.IpRangeList for their INTERNAL_IPS. This is a class
+        that can quickly answer the question if the setting contain a certain IP address,
+        but iterating over this object will drain all performance / blow up.
+        """
+
+        class FailOnIteration:
+            def __iter__(self):
+                raise RuntimeError(
+                    "The testcase failed: the code should not have iterated over INTERNAL_IPS"
+                )
+
+            def __contains__(self, x):
+                return True
+
+        with self.settings(INTERNAL_IPS=FailOnIteration()):
+            response = self.client.get("/regular/basic/")
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, "djDebug")  # toolbar
+
     def test_should_render_panels_RENDER_PANELS(self):
         """
         The toolbar should force rendering panels on each request
@@ -792,3 +814,31 @@ class DebugToolbarLiveTestCase(StaticLiveServerTestCase):
         )
         self.assertNotIn("/ajax/", history_panel.text)
         self.assertIn("/json_view/", history_panel.text)
+
+    def test_theme_toggle(self):
+        self.get("/regular/basic/")
+
+        toolbar = self.selenium.find_element(By.ID, "djDebug")
+
+        # Check that the default theme is auto
+        self.assertEqual(toolbar.get_attribute("data-theme"), "auto")
+
+        # The theme toggle button is shown on the toolbar
+        toggle_button = self.selenium.find_element(By.ID, "djToggleThemeButton")
+        self.assertTrue(toggle_button.is_displayed())
+
+        # The theme changes when user clicks the button
+        toggle_button.click()
+        self.assertEqual(toolbar.get_attribute("data-theme"), "light")
+        toggle_button.click()
+        self.assertEqual(toolbar.get_attribute("data-theme"), "dark")
+        toggle_button.click()
+        self.assertEqual(toolbar.get_attribute("data-theme"), "auto")
+        # Switch back to light.
+        toggle_button.click()
+        self.assertEqual(toolbar.get_attribute("data-theme"), "light")
+
+        # Enter the page again to check that user settings is saved
+        self.get("/regular/basic/")
+        toolbar = self.selenium.find_element(By.ID, "djDebug")
+        self.assertEqual(toolbar.get_attribute("data-theme"), "light")

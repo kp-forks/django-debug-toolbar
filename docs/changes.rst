@@ -4,6 +4,27 @@ Change log
 Pending
 -------
 
+* Fixed overriding font-family for both light and dark themes.
+* Restored compatibility with ``iptools.IpRangeList``.
+
+4.4.2 (2024-05-27)
+------------------
+
+* Removed some CSS which wasn't carefully limited to the toolbar's elements.
+* Stopped assuming that ``INTERNAL_IPS`` is a list.
+* Added a section to the installation docs about running tests in projects
+  where the toolbar is being used.
+
+
+4.4.1 (2024-05-26)
+------------------
+
+* Pin metadata version to 2.2 to be compatible with Jazzband release
+  process.
+
+4.4.0 (2024-05-26)
+------------------
+
 * Raised the minimum Django version to 4.2.
 * Automatically support Docker rather than having the developer write a
   workaround for ``INTERNAL_IPS``.
@@ -32,6 +53,9 @@ Pending
 * Added check to prevent the toolbar from being installed when tests
   are running.
 * Added test to example app and command to run the example app's tests.
+* Implemented dark mode theme and button to toggle the theme,
+  introduced the ``DEFAULT_THEME`` setting which sets the default theme
+  to use.
 
 4.3.0 (2024-02-01)
 ------------------
